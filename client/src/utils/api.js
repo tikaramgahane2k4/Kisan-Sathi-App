@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { offlineInit, isOnline, getCached, cacheResponse, enqueue, flushQueue, canQueue } from './offline';
 
 const API = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api'
@@ -13,28 +14,72 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
+// Cache GET responses
+API.interceptors.response.use(async (res) => {
+  try {
+    if (res.config && res.config.method === 'get') {
+      const key = `${res.config.baseURL}${res.config.url}${res.config.params ? '?' + new URLSearchParams(res.config.params).toString() : ''}`;
+      await cacheResponse(key, res.data);
+    }
+  } catch {}
+  return res;
+});
+
+const getKey = (url, params) => {
+  const base = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  return `${base}${url}${params ? '?' + new URLSearchParams(params).toString() : ''}`;
+};
+
+const safeGet = async (url, params) => {
+  await offlineInit();
+  if (isOnline()) {
+    const res = await API.get(url, { params });
+    return res;
+  } else {
+    const data = await getCached(getKey(url, params));
+    if (data !== undefined) return { data };
+    throw new Error('Offline and no cached data available');
+  }
+};
+
+const safeWrite = async (method, url, data, config) => {
+  await offlineInit();
+  if (isOnline()) {
+    return API[method](url, data, config);
+  }
+  if (canQueue(method, url, data, config)) {
+    const headers = (config && config.headers) || {};
+    await enqueue(method.toUpperCase(), url, data, headers);
+    return { data: { queued: true } };
+  }
+  throw new Error('Offline: cannot queue this request');
+};
+
 // Auth APIs
-export const signup = (formData) => API.post('/auth/signup', formData);
-export const login = (formData) => API.post('/auth/login', formData);
-export const getMe = () => API.get('/auth/me');
+export const signup = (formData) => safeWrite('post', '/auth/signup', formData);
+export const login = (formData) => safeWrite('post', '/auth/login', formData);
+export const getMe = () => safeGet('/auth/me');
 
 // Crop APIs
-export const createCrop = (cropData) => API.post('/crops', cropData);
-export const getCrops = (status) => API.get('/crops', { params: { status } });
-export const getCrop = (id) => API.get(`/crops/${id}`);
-export const updateCrop = (id, cropData) => API.put(`/crops/${id}`, cropData);
-export const completeCrop = (id, production) => API.put(`/crops/${id}/complete`, { production });
-export const deleteCrop = (id) => API.delete(`/crops/${id}`);
+export const createCrop = (cropData) => safeWrite('post', '/crops', cropData);
+export const getCrops = (status) => safeGet('/crops', { status });
+export const getCrop = (id) => safeGet(`/crops/${id}`);
+export const updateCrop = (id, cropData) => safeWrite('put', `/crops/${id}`, cropData);
+export const completeCrop = (id, production) => safeWrite('put', `/crops/${id}/complete`, { production });
+export const deleteCrop = (id) => safeWrite('delete', `/crops/${id}`);
 
 // Material APIs
-export const addMaterial = (formData) => API.post('/materials', formData, {
+export const addMaterial = (formData) => safeWrite('post', '/materials', formData, {
   headers: { 'Content-Type': 'multipart/form-data' }
 });
-export const getMaterials = (cropId) => API.get('/materials', { params: { crop: cropId } });
-export const getMaterial = (id) => API.get(`/materials/${id}`);
-export const updateMaterial = (id, formData) => API.put(`/materials/${id}`, formData, {
+export const getMaterials = (cropId) => safeGet('/materials', { crop: cropId });
+export const getMaterial = (id) => safeGet(`/materials/${id}`);
+export const updateMaterial = (id, formData) => safeWrite('put', `/materials/${id}`, formData, {
   headers: { 'Content-Type': 'multipart/form-data' }
 });
-export const deleteMaterial = (id) => API.delete(`/materials/${id}`);
+export const deleteMaterial = (id) => safeWrite('delete', `/materials/${id}`);
+
+// Expose manual flush (used on online event)
+export const flushOfflineQueue = () => flushQueue(API);
 
 export default API;

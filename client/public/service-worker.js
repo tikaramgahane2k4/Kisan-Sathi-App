@@ -17,19 +17,31 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Network first, then cache strategy for API calls
-  if (event.request.url.includes('/api/')) {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // API: GET -> network-first, cache put; fallback to cache
+  if (url.pathname.startsWith('/api/') && request.method === 'GET') {
     event.respondWith(
-      fetch(event.request)
-        .catch(() => caches.match(event.request))
+      fetch(request)
+        .then(async (response) => {
+          const cache = await caches.open(CACHE_NAME);
+          cache.put(request, response.clone());
+          return response;
+        })
+        .catch(() => caches.match(request))
     );
     return;
   }
 
-  // Cache first, then network for static assets
+  // API: non-GET -> pass-through (handled by app-side queue)
+  if (url.pathname.startsWith('/api/')) {
+    return; // let the request go to network; app handles offline
+  }
+
+  // Static assets: cache-first
   event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
+    caches.match(request).then((response) => response || fetch(request))
   );
 });
 

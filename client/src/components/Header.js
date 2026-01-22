@@ -1,49 +1,52 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import LanguageSwitcher from './LanguageSwitcher';
 
 function Header() {
   const { user, logout } = useAuth();
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   return (
-    <header className="bg-gradient-to-r from-primary to-secondary shadow-md sticky top-0 z-50 header-bar">
-      <div className="max-w-7xl mx-auto px-2 xs:px-3 sm:px-4 lg:px-6 py-2 xs:py-3 sm:py-4 header-inner">
-        <div className="flex justify-between items-center gap-2 xs:gap-3 sm:gap-4">
+    <header className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 shadow-lg sticky top-0 z-50 w-full overflow-x-hidden">
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 md:px-7 lg:px-8 py-3 sm:py-4 md:py-4">
+        {/* Top Row - Logo and Buttons */}
+        <div className="flex justify-between items-center gap-3 sm-lg:gap-4 md:gap-5 lg:gap-6 w-full">
           {/* Logo & Title */}
-          <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 flex-1 min-w-0">
-            <div className="w-8 h-8 xs:w-10 xs:h-10 sm:w-12 sm:h-12 bg-white rounded flex-shrink-0 flex items-center justify-center shadow-sm">
-              <span className="text-sm xs:text-base sm:text-lg font-bold text-primary">KS</span>
+          <div className="flex items-center gap-2 sm-lg:gap-3 flex-1 min-w-0">
+            <div className="w-12 h-12 sm-lg:w-14 sm-lg:h-14 md:w-15 md:h-15 lg:w-16 lg:h-16 bg-white rounded-lg flex-shrink-0 flex items-center justify-center shadow-md">
+              <span className="text-2xl sm-lg:text-3xl md:text-3xl lg:text-4xl font-bold">🌾</span>
             </div>
             <div className="min-w-0 flex-1">
-              <h1 className="text-base xs:text-lg sm:text-xl lg:text-2xl font-bold text-white truncate leading-tight">
+              <h1 className="text-lg sm-lg:text-xl md:text-2xl lg:text-2xl font-bold text-white truncate">
                 {t('appName')}
               </h1>
               {user?.name && (
-                <p className="text-xs sm:text-sm text-green-50 truncate hidden xs:block leading-tight">
+                <p className="text-xs sm-lg:text-sm md:text-sm lg:text-base text-emerald-100 truncate">
                   {user.name}
                 </p>
               )}
             </div>
           </div>
 
-          {/* Right Side Controls */}
-          <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 flex-shrink-0">
-            <div className="hidden xs:block">
-              <LanguageSwitcher />
-            </div>
+          {/* Action Buttons - All sizes */}
+          <div className="flex items-center gap-1.5 sm-lg:gap-2 md:gap-3 flex-shrink-0">
+            {user && (
+              <button
+                onClick={() => navigate('/analytics')}
+                className="px-2 sm-lg:px-4 md:px-3 md-lg:px-4 lg:px-5 py-2 md-lg:py-2.5 bg-white text-emerald-700 font-semibold rounded-lg hover:bg-emerald-50 hover:shadow-lg transition-all shadow-md text-xs sm-lg:text-sm md:text-sm md-lg:text-sm lg:text-base flex items-center justify-center gap-0.5 sm-lg:gap-1 md-lg:gap-1.5 active:scale-95 touch-manipulation min-h-[40px] md-lg:min-h-[42px]">
+                <span className="text-lg md-lg:text-xl">📊</span>
+                <span className="hidden md:inline">{t('analyticsTitle') || 'Analytics'}</span>
+              </button>
+            )}
             <button
               onClick={logout}
-              className="px-2 xs:px-3 sm:px-4 py-1.5 xs:py-2 text-xs sm:text-sm bg-white text-primary font-semibold rounded hover:bg-gray-100 transition-colors whitespace-nowrap shadow-sm"
+              className="px-2 sm-lg:px-4 md:px-3 md-lg:px-4 lg:px-5 py-2 md-lg:py-2.5 bg-white text-emerald-700 font-semibold rounded-lg hover:bg-emerald-50 hover:shadow-lg transition-all shadow-md text-xs sm-lg:text-sm md:text-sm md-lg:text-sm lg:text-base active:scale-95 touch-manipulation min-h-[40px] md-lg:min-h-[42px]"
             >
               {t('logout')}
             </button>
           </div>
-        </div>
-        {/* Mobile Language Switcher */}
-        <div className="xs:hidden mt-2 flex justify-center">
-          <LanguageSwitcher />
         </div>
       </div>
     </header>

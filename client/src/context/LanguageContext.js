@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
+import React, { createContext, useContext, useMemo, useState, useEffect, useCallback } from 'react';
 
 const translations = {
   en: {
@@ -9,6 +9,19 @@ const translations = {
     feature2: 'Calculate profit and loss',
     feature3: 'Keep records for every crop',
     feature4: 'Generate PDF reports',
+    weatherTitle: 'Weather & Advisory',
+    fetchingWeather: 'Fetching local weather...',
+    enableLocation: 'Enable location or search city',
+    enterCity: 'Enter city name',
+    checkWeather: 'Check Weather',
+    currentTemp: 'Current Temp',
+    rainToday: 'Rain Today',
+    advisories: 'Advisories',
+    weatherUnavailable: 'Weather unavailable',
+    heavyRainAdvice: 'Heavy rain expected — avoid sowing/harvest, ensure drainage',
+    moderateRainAdvice: 'Moderate rain — delay spraying, plan field work accordingly',
+    highTempAdvice: 'High temperature — irrigate early morning/evening, avoid mid-day work',
+    normalAdvice: 'Conditions normal — proceed with planned activities',
     ctaStart: 'Get Started',
     ctaLogin: 'Log In',
     footerTagline: 'Built for Indian farmers',
@@ -137,7 +150,19 @@ const translations = {
     addExpenseError: 'Error adding expense',
     updateExpenseError: 'Error updating expense',
     loadExpenseError: 'Error loading expense',
-    days: 'days'
+    days: 'days',
+    offlineTitle: 'Working Offline',
+    offlineQueuedChanges: 'Your changes are queued and will sync when online.',
+    offlineSyncProgress: 'Syncing queued changes...',
+    offlineSynced: 'All changes synced!',
+    analyticsTitle: 'Analytics & Insights',
+    avgYield: 'Average Yield',
+    topPerformer: 'Top Performer',
+    expensesBreakdown: 'Expenses by Type',
+    profitTrend: 'Profit Trend',
+    notificationPrompt: 'Get alerts for weather and tasks',
+    notLater: 'Not now',
+    enable: 'Enable Notifications'
   },
   hi: {
     appName: 'किसान प्रॉफिट मित्र',
@@ -147,6 +172,19 @@ const translations = {
     feature2: 'लाभ-हानि की गणना करें',
     feature3: 'सभी फसलों का रिकॉर्ड',
     feature4: 'PDF रिपोर्ट बनाएं',
+    weatherTitle: 'मौसम व सलाह',
+    fetchingWeather: 'स्थानीय मौसम लाया जा रहा है...',
+    enableLocation: 'लोकेशन ऑन करें या शहर खोजें',
+    enterCity: 'शहर का नाम दर्ज करें',
+    checkWeather: 'मौसम देखें',
+    currentTemp: 'वर्तमान तापमान',
+    rainToday: 'आज बारिश',
+    advisories: 'सलाह',
+    weatherUnavailable: 'मौसम उपलब्ध नहीं',
+    heavyRainAdvice: 'तेज़ बारिश — बुआई/कटाई से बचें, निकासी सुनिश्चित करें',
+    moderateRainAdvice: 'मध्यम बारिश — दवा छिड़काव टालें, काम योजनाबद्ध करें',
+    highTempAdvice: 'उच्च तापमान — सुबह/शाम सिंचाई करें, दोपहर में काम न करें',
+    normalAdvice: 'स्थिति सामान्य — योजनानुसार कार्य करें',
     ctaStart: 'शुरू करें',
     ctaLogin: 'लॉगिन करें',
     footerTagline: 'भारतीय किसानों के लिए बनाया गया',
@@ -275,7 +313,19 @@ const translations = {
     addExpenseError: 'खर्च जोड़ने में त्रुटि',
     updateExpenseError: 'खर्च अपडेट करने में त्रुटि',
     loadExpenseError: 'खर्च लोड करने में त्रुटि',
-    days: 'दिन'
+    days: 'दिन',
+    offlineTitle: 'ऑफलाइन काम कर रहे हैं',
+    offlineQueuedChanges: 'आपके परिवर्तन कतार में हैं और जब आप ऑनलाइन होंगे तो सिंक हो जाएंगे।',
+    offlineSyncProgress: 'सिंक हो रहे हैं...',
+    offlineSynced: 'सभी परिवर्तन सिंक हो गए!',
+    analyticsTitle: 'विश्लेषण और अंतर्दृष्टि',
+    avgYield: 'औसत पैदावार',
+    topPerformer: 'सर्वश्रेष्ठ फसल',
+    expensesBreakdown: 'प्रकार के अनुसार खर्च',
+    profitTrend: 'लाभ प्रवृत्ति',
+    notificationPrompt: 'मौसम और कार्यों के लिए सतर्कताएँ प्राप्त करें',
+    notLater: 'अभी नहीं',
+    enable: 'सूचनाएं सक्षम करें'
   },
   mr: {
     appName: 'किसान प्रॉफिट मित्र',
@@ -285,6 +335,19 @@ const translations = {
     feature2: 'नफा-तोटा मोजा',
     feature3: 'प्रत्येक पिकाची नोंद ठेवा',
     feature4: 'PDF अहवाल तयार करा',
+    weatherTitle: 'हवामान व सल्ला',
+    fetchingWeather: 'स्थानिक हवामान घेत आहे...',
+    enableLocation: 'लोकेशन सुरू करा किंवा शहर शोधा',
+    enterCity: 'शहराचे नाव टाका',
+    checkWeather: 'हवामान पहा',
+    currentTemp: 'सध्याचे तापमान',
+    rainToday: 'आज पाऊस',
+    advisories: 'सल्ले',
+    weatherUnavailable: 'हवामान उपलब्ध नाही',
+    heavyRainAdvice: 'जोरदार पाऊस — पेरणी/मांडणी टाळा, निचरा सुनिश्चित करा',
+    moderateRainAdvice: 'मध्यम पाऊस — फवारणी टाळा, काम नियोजनाने करा',
+    highTempAdvice: 'उच्च तापमान — सकाळ/संध्याकाळ पाणी द्या, दुपारी काम टाळा',
+    normalAdvice: 'स्थिती सामान्य — नियोजित कामे करा',
     ctaStart: 'सुरू करा',
     ctaLogin: 'लॉगिन',
     footerTagline: 'भारतीय शेतकऱ्यांसाठी बनविलेले',
@@ -413,7 +476,19 @@ const translations = {
     addExpenseError: 'खर्च जोडताना त्रुटी',
     updateExpenseError: 'खर्च अपडेट करताना त्रुटी',
     loadExpenseError: 'खर्च लोड करताना त्रुटी',
-    days: 'दिवस'
+    days: 'दिवस',
+    offlineTitle: 'ऑफलाइन काम करत आहे',
+    offlineQueuedChanges: 'आपले बदल कतारमध्ये आहेत आणि जेव्हा आप ऑनलाइन असाल तेव्हा सिंक होतील।',
+    offlineSyncProgress: 'सिंक करत आहे...',
+    offlineSynced: 'सर्व बदल सिंक झाले!',
+    analyticsTitle: 'विश्लेषण आणि अंतर्दृष्टी',
+    avgYield: 'सरासरी उत्पन्न',
+    topPerformer: 'शीर्ष पिक',
+    expensesBreakdown: 'प्रकारानुसार खर्च',
+    profitTrend: 'नफा प्रवृत्ति',
+    notificationPrompt: 'हवामान आणि कार्यांसाठी सतर्कता मिळवा',
+    notLater: 'अभी नाही',
+    enable: 'सूचना सक्षम करा'
   }
 };
 
@@ -431,15 +506,16 @@ export const LanguageProvider = ({ children }) => {
     }
   }, [lang]);
 
-  const setLang = (value) => {
+  const setLang = useCallback((value) => {
     setLangState(value);
-  };
+  }, []);
 
   const t = useMemo(() => {
     return (key) => translations[lang]?.[key] || translations.en[key] || key;
   }, [lang]);
 
-  const value = useMemo(() => ({ lang, setLang, t }), [lang, setLang, t]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const value = useMemo(() => ({ lang, setLang, t }), [lang, t]);
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 };

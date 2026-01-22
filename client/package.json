@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^13.5.0",
     "autoprefixer": "^10.4.20",
     "axios": "^1.13.2",
+    "idb": "^8.0.3",
     "jspdf": "^4.0.0",
     "postcss": "^8.4.41",
     "react": "^19.2.3",

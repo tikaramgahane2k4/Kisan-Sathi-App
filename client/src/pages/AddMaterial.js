@@ -165,10 +165,10 @@ function AddMaterial() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow">
-        <div className="max-w-4xl mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 py-3 xs:py-4">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
             onClick={() => navigate(`/crop/${id}`)}
-            className="text-primary hover:underline mb-2 flex items-center gap-1 text-sm xs:text-base"
+            className="text-primary hover:underline mb-2 flex items-center gap-1 text-sm sm:text-base"
           >
             ← {t('backToCropDetails')}
           </button>
@@ -185,30 +185,30 @@ function AddMaterial() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4 xs:space-y-5 sm:space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 xs:gap-5 sm:gap-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 sm:gap-6 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 w-full">
               {/* Date */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm xs:text-base">{t('dateLabel')} *</label>
+              <div className="flex flex-col gap-2">
+                <label className="text-gray-700 font-medium text-sm sm:text-base">{t('dateLabel')} *</label>
                 <input
                   type="date"
                   name="date"
                   value={formData.date}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                 />
               </div>
 
               {/* Material Type */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm xs:text-base">{t('materialTypeLabel')} *</label>
+              <div className="flex flex-col gap-2">
+                <label className="text-gray-700 font-medium text-sm sm:text-base">{t('materialTypeLabel')} *</label>
                 <select
                   name="materialType"
                   value={formData.materialType}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                 >
                   {materialTypes.map(type => (
                     <option key={type} value={type}>{translateValue(materialTypeMap, type, lang)}</option>
@@ -218,8 +218,8 @@ function AddMaterial() {
             </div>
 
             {/* Material Name */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-2 text-sm xs:text-base">
+            <div className="flex flex-col gap-2">
+              <label className="text-gray-700 font-medium text-sm sm:text-base">
                 {formData.materialType === 'ट्रैक्टर/उपकरण' ? t('tractorOwnerLabel') : t('materialNameLabel')} *
               </label>
               <input
@@ -229,14 +229,14 @@ function AddMaterial() {
                 onChange={handleChange}
                 placeholder={formData.materialType === 'ट्रैक्टर/उपकरण' ? t('tractorOwnerPlaceholder') : t('materialNamePlaceholder')}
                 required
-                className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
               />
             </div>
 
-            {/* Quantity */}
-            <div className="grid grid-cols-2 gap-3 xs:gap-4">
-              <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm xs:text-base">
+            {/* Quantity - Grid */}
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
+              <div className="flex flex-col gap-2">
+                <label className="text-gray-700 font-medium text-sm sm:text-base">
                   {formData.materialType === 'ट्रैक्टर/उपकरण' ? t('hoursLabel') :
                     formData.materialType === 'मजदूरी' ? t('personsLabel') : t('quantityLabel')} *
                 </label>
@@ -249,17 +249,17 @@ function AddMaterial() {
                   placeholder={formData.materialType === 'ट्रैक्टर/उपकरण' ? t('tractorHoursPlaceholder') : t('quantityPlaceholder')}
                   required
                   min="0.01"
-                  className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                 />
               </div>
-              <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm xs:text-base">{t('unitLabel')} *</label>
+              <div className="flex flex-col gap-2">
+                <label className="text-gray-700 font-medium text-sm sm:text-base">{t('unitLabel')} *</label>
                 <select
                   name="quantityUnit"
                   value={formData.quantityUnit}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                 >
                   {units.map(unit => (
                     <option key={unit} value={unit}>{translateValue(quantityUnitMap, unit, lang)}</option>
@@ -270,8 +270,8 @@ function AddMaterial() {
 
             {/* Labor Days (for labor only) */}
             {formData.materialType === 'मजदूरी' && (
-              <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm xs:text-base">{t('numberOfDaysLabel')} *</label>
+              <div className="flex flex-col gap-2">
+                <label className="text-gray-700 font-medium text-sm sm:text-base">{t('numberOfDaysLabel')} *</label>
                 <input
                   type="number"
                   step="1"
@@ -281,14 +281,14 @@ function AddMaterial() {
                   placeholder={t('daysPlaceholder')}
                   required
                   min="1"
-                  className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                 />
               </div>
             )}
 
             {/* Price Per Unit */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-2 text-sm xs:text-base">
+            <div className="flex flex-col gap-2">
+              <label className="text-gray-700 font-medium text-sm sm:text-base">
                 {formData.materialType === 'ट्रैक्टर/उपकरण' ? t('pricePerHourLabel') :
                   formData.materialType === 'मजदूरी' ? t('pricePerPersonLabel') : t('pricePerUnitLabel')} *
               </label>
@@ -301,17 +301,17 @@ function AddMaterial() {
                 placeholder={t('pricePlaceholder')}
                 required
                 min="0.01"
-                className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
               />
             </div>
 
             {/* Total Amount Display */}
             {formData.totalAmount > 0 && (
-              <div className="bg-green-50 border-2 border-green-300 rounded-lg p-3 xs:p-4">
-                <div className="text-center">
-                  <p className="text-xs xs:text-sm text-gray-600 mb-1">{t('totalAmountLabel')}</p>
-                  <p className="text-2xl xs:text-3xl font-bold text-green-700">₹{formData.totalAmount.toFixed(2)}</p>
-                  <p className="text-xs text-gray-500 mt-2">
+              <div className="bg-emerald-50 border-2 border-emerald-300 rounded-lg p-4 sm:p-5">
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-sm sm:text-base text-gray-600">{t('totalAmountLabel')}</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-emerald-700">₹{formData.totalAmount.toFixed(2)}</p>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1 text-center">
                     {formData.quantityValue} {translateValue(quantityUnitMap, formData.quantityUnit, lang)} × ₹{formData.pricePerUnit}
                     {formData.materialType === 'मजदूरी' && formData.laborDays > 1 ? ` × ${formData.laborDays} ${t('days')}` : ''}
                   </p>
@@ -321,13 +321,13 @@ function AddMaterial() {
 
             {/* Gender (for labor only) */}
             {formData.materialType === 'मजदूरी' && (
-              <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm xs:text-base">{t('laborTypeLabel')}</label>
+              <div className="flex flex-col gap-2">
+                <label className="text-gray-700 font-medium text-sm sm:text-base">{t('laborTypeLabel')}</label>
                 <select
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
-                  className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                 >
                   {Object.keys(genderMap).map((value) => (
                     <option key={value} value={value}>{translateValue(genderMap, value, lang)}</option>
@@ -337,43 +337,43 @@ function AddMaterial() {
             )}
 
             {/* Bill Image */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-2 text-sm xs:text-base">{t('billPhotoLabel')}</label>
+            <div className="flex flex-col gap-2">
+              <label className="text-gray-700 font-medium text-sm sm:text-base">{t('billPhotoLabel')}</label>
               <input
                 type="file"
                 accept="image/*,.pdf"
                 onChange={handleFileChange}
-                className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
               />
-              <p className="text-xs xs:text-sm text-gray-500 mt-1">{t('billPhotoHelp')}</p>
+              <p className="text-xs sm:text-sm text-gray-500">{t('billPhotoHelp')}</p>
             </div>
 
             {/* Notes */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-2 text-sm xs:text-base">{t('notesLabel')}</label>
+            <div className="flex flex-col gap-2">
+              <label className="text-gray-700 font-medium text-sm sm:text-base">{t('notesLabel')}</label>
               <textarea
                 name="notes"
                 value={formData.notes}
                 onChange={handleChange}
                 placeholder={t('notesPlaceholder')}
                 rows="3"
-                className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
               />
             </div>
 
-            {/* Buttons */}
-            <div className="flex flex-col xs:flex-row gap-3 xs:gap-4 pt-4">
+            {/* Buttons - Flexbox */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 w-full">
               <button
                 type="button"
                 onClick={() => navigate(`/crop/${id}`)}
-                className="flex-1 px-4 xs:px-6 py-2.5 xs:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm xs:text-base font-medium"
+                className="flex-1 px-5 sm:px-6 py-3 sm:py-4 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-400 text-base sm:text-lg font-bold transition-all min-h-[48px] touch-manipulation"
               >
                 {t('cancel')}
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-4 xs:px-6 py-2.5 xs:py-3 bg-primary text-white rounded-lg hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm xs:text-base"
+                className="flex-1 px-5 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white rounded-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed font-bold text-base sm:text-lg transition-all active:scale-95 min-h-[48px] touch-manipulation"
               >
                 {loading ? t('addingExpenseButton') : t('addExpenseButton')}
               </button>

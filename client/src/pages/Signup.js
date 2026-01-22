@@ -56,29 +56,30 @@ function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex flex-col items-center justify-center px-3 xs:px-4 sm:px-6 py-4 sm:py-6 relative auth-shell">
-      <div className="absolute top-3 xs:top-4 right-3 xs:right-4 auth-lang">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-teal-100 flex flex-col items-center justify-center px-4 sm:px-6 py-4 sm:py-6 relative auth-shell w-full max-w-[100vw] overflow-x-hidden">
+      <div className="absolute top-4 right-4 auth-lang">
         <LanguageSwitcher />
       </div>
-      <div className="w-full max-w-sm xs:max-w-md">
-        <div className="bg-white rounded-xl xs:rounded-2xl shadow-lg xs:shadow-xl p-5 xs:p-6 sm:p-8 auth-card">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 auth-card border-2 border-emerald-200">
           {/* Header */}
-          <div className="text-center mb-5 xs:mb-6 sm:mb-8">
-            <h2 className="text-2xl xs:text-3xl font-bold text-gray-900 mb-1 xs:mb-2">{t('signupTitle')}</h2>
-            <p className="text-sm xs:text-base text-gray-600">{t('signupSubtitle')}</p>
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="text-5xl mb-3">🚜</div>
+            <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent mb-2">{t('signupTitle')}</h2>
+            <p className="text-base text-gray-600">{t('signupSubtitle')}</p>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-4 p-3 xs:p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm xs:text-base">
+            <div className="mb-6 p-4 bg-rose-50 border-2 border-rose-300 text-rose-700 rounded-lg text-base font-medium">
               {error}
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3 xs:space-y-4 sm:space-y-5">
-            <div>
-              <label className="block text-gray-700 font-medium mb-1 xs:mb-2 text-sm xs:text-base">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 sm:gap-6 w-full">
+            <div className="flex flex-col gap-2">
+              <label className="text-gray-700 font-bold text-sm sm:text-base">
                 {t('nameLabel')}
               </label>
               <input
@@ -88,12 +89,12 @@ function Signup() {
                 onChange={handleChange}
                 placeholder={t('namePlaceholder')}
                 required
-                className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
               />
             </div>
 
-            <div>
-              <label className="block text-gray-700 font-medium mb-1 xs:mb-2 text-sm xs:text-base">
+            <div className="flex flex-col gap-2">
+              <label className="text-gray-700 font-bold text-sm sm:text-base">
                 {t('mobileLabel')}
               </label>
               <input
@@ -105,12 +106,12 @@ function Signup() {
                 maxLength="10"
                 pattern="[0-9]{10}"
                 required
-                className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
               />
             </div>
 
-            <div>
-              <label className="block text-gray-700 font-medium mb-1 xs:mb-2 text-sm xs:text-base">
+            <div className="flex flex-col gap-2">
+              <label className="text-gray-700 font-bold text-sm sm:text-base">
                 {t('passwordLabel')}
               </label>
               <input
@@ -121,12 +122,12 @@ function Signup() {
                 placeholder={t('passwordPlaceholder')}
                 minLength="6"
                 required
-                className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
               />
             </div>
 
-            <div>
-              <label className="block text-gray-700 font-medium mb-1 xs:mb-2 text-sm xs:text-base">
+            <div className="flex flex-col gap-2">
+              <label className="text-gray-700 font-bold text-sm sm:text-base">
                 {t('confirmPasswordLabel')}
               </label>
               <input
@@ -136,32 +137,32 @@ function Signup() {
                 onChange={handleChange}
                 placeholder={t('confirmPasswordPlaceholder')}
                 required
-                className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-sm xs:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 xs:py-3 bg-primary text-white font-semibold text-sm xs:text-base rounded-lg shadow-lg hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full py-3 sm:py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-bold text-base sm:text-lg rounded-lg shadow-lg hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 min-h-[48px] touch-manipulation"
             >
               {loading ? t('signupButtonLoading') : t('signupButton')}
             </button>
           </form>
 
           {/* Login Link */}
-          <div className="mt-4 xs:mt-6 text-center">
-            <p className="text-gray-600 text-xs xs:text-sm sm:text-base">
-              {t('haveAccount')}{' '}
-              <Link to="/login" className="text-primary font-semibold hover:underline">
+          <div className="mt-6 text-center">
+            <p className="text-gray-700 text-sm sm:text-base font-medium">
+              {t('alreadyHaveAccount')}{' '}
+              <Link to="/login" className="text-emerald-600 font-bold hover:text-emerald-700 transition-colors">
                 {t('loginHere')}
               </Link>
             </p>
           </div>
 
           {/* Back to Home */}
-          <div className="mt-3 xs:mt-4 text-center">
-            <Link to="/" className="text-gray-500 text-xs xs:text-sm hover:text-gray-700">
+          <div className="mt-4 text-center">
+            <Link to="/" className="text-gray-500 text-sm hover:text-emerald-600 font-medium transition-colors">
               {t('backHome')}
             </Link>
           </div>
