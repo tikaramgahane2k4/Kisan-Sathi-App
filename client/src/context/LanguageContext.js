@@ -328,8 +328,8 @@ const translations = {
     enable: 'सूचनाएं सक्षम करें'
   },
   mr: {
-    appName: 'किसान प्रॉफिट मित्र',
-    heroTitle: 'किसान प्रॉफिट मित्र',
+    appName: 'किसान नफा साथी',
+    heroTitle: 'किसान नफा साथी',
     heroSubtitle: 'तुमची डिजिटल शेती डायरी',
     feature1: 'सर्व खर्च नोंदवा',
     feature2: 'नफा-तोटा मोजा',

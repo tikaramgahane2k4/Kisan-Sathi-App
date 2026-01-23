@@ -11,6 +11,8 @@ import Analytics from './pages/Analytics';
 import CropDetails from './pages/CropDetails';
 import AddMaterial from './pages/AddMaterial';
 import EditMaterial from './pages/EditMaterial';
+import MarketPrices from './pages/MarketPrices';
+import KnowledgeBase from './pages/KnowledgeBase';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -52,7 +54,11 @@ function App() {
               <Route path="/" element={<PublicRoute><Welcome /></PublicRoute>} />
               <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
               <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />            <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />              <Route path="/crop/:id" element={<ProtectedRoute><CropDetails /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+              <Route path="/market-prices" element={<ProtectedRoute><MarketPrices /></ProtectedRoute>} />
+              <Route path="/knowledge-base" element={<ProtectedRoute><KnowledgeBase /></ProtectedRoute>} />
+              <Route path="/crop/:id" element={<ProtectedRoute><CropDetails /></ProtectedRoute>} />
               <Route path="/crop/:id/add-material" element={<ProtectedRoute><AddMaterial /></ProtectedRoute>} />
               <Route path="/crop/:id/edit-material/:materialId" element={<ProtectedRoute><EditMaterial /></ProtectedRoute>} />
             </Routes>

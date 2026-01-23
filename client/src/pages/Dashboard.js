@@ -113,14 +113,36 @@ function Dashboard() {
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-7 lg:px-8 py-4 sm:py-6 md:py-7 lg:py-8">
           {/* Weather Advisory */}
           <WeatherWidget />
-          {/* Add Crop Button */}
-          <div className="mb-6 sm:mb-8 md:mb-9 flex justify-center sm:justify-start w-full">
+
+          {/* Quick Navigation */}
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-2 xs:gap-3 sm:gap-4 mb-4 xs:mb-6 sm:mb-8">
             <button
               onClick={() => setShowModal(true)}
-              className="w-full sm:w-auto px-6 sm:px-8 md:px-9 lg:px-10 py-3 sm:py-4 md:py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-bold rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 text-base sm:text-lg md:text-lg min-h-[48px] touch-manipulation"
+              className="flex flex-col sm:flex-row items-center justify-center gap-1.5 xs:gap-2 sm:gap-2 w-full px-3 xs:px-4 py-2.5 xs:py-3 sm:py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-md xs:rounded-lg font-bold text-[10px] xs:text-xs sm:text-sm hover:shadow-xl transition-all active:scale-95 min-h-[44px] xs:min-h-[48px] sm:min-h-[52px] touch-manipulation"
             >
-              <span className="text-xl sm:text-2xl md:text-2xl">+</span>
-              {t('startNewCrop')}
+              <span className="text-base xs:text-lg sm:text-xl">🌾</span>
+              <span className="text-center leading-tight">{t('startNewCrop')}</span>
+            </button>
+            <button
+              onClick={() => navigate('/market-prices')}
+              className="flex flex-col sm:flex-row items-center justify-center gap-1.5 xs:gap-2 sm:gap-2 w-full px-3 xs:px-4 py-2.5 xs:py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-md xs:rounded-lg font-bold text-[10px] xs:text-xs sm:text-sm hover:shadow-xl transition-all active:scale-95 min-h-[44px] xs:min-h-[48px] sm:min-h-[52px] touch-manipulation"
+            >
+              <span className="text-base xs:text-lg sm:text-xl">📊</span>
+              <span className="text-center leading-tight">{t('marketPrices') || 'Market'}</span>
+            </button>
+            <button
+              onClick={() => navigate('/knowledge-base')}
+              className="flex flex-col sm:flex-row items-center justify-center gap-1.5 xs:gap-2 sm:gap-2 w-full px-3 xs:px-4 py-2.5 xs:py-3 sm:py-4 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-md xs:rounded-lg font-bold text-[10px] xs:text-xs sm:text-sm hover:shadow-xl transition-all active:scale-95 min-h-[44px] xs:min-h-[48px] sm:min-h-[52px] touch-manipulation"
+            >
+              <span className="text-base xs:text-lg sm:text-xl">📚</span>
+              <span className="text-center leading-tight">{t('knowledgeBase') || 'Learn'}</span>
+            </button>
+            <button
+              onClick={() => navigate('/analytics')}
+              className="flex flex-col sm:flex-row items-center justify-center gap-1.5 xs:gap-2 sm:gap-2 w-full px-3 xs:px-4 py-2.5 xs:py-3 sm:py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-md xs:rounded-lg font-bold text-[10px] xs:text-xs sm:text-sm hover:shadow-xl transition-all active:scale-95 min-h-[44px] xs:min-h-[48px] sm:min-h-[52px] touch-manipulation"
+            >
+              <span className="text-base xs:text-lg sm:text-xl">📈</span>
+              <span className="text-center leading-tight">{t('analytics')}</span>
             </button>
           </div>
 

@@ -32,14 +32,6 @@ function Header() {
 
           {/* Action Buttons - All sizes */}
           <div className="flex items-center gap-1.5 sm-lg:gap-2 md:gap-3 flex-shrink-0">
-            {user && (
-              <button
-                onClick={() => navigate('/analytics')}
-                className="px-2 sm-lg:px-4 md:px-3 md-lg:px-4 lg:px-5 py-2 md-lg:py-2.5 bg-white text-emerald-700 font-semibold rounded-lg hover:bg-emerald-50 hover:shadow-lg transition-all shadow-md text-xs sm-lg:text-sm md:text-sm md-lg:text-sm lg:text-base flex items-center justify-center gap-0.5 sm-lg:gap-1 md-lg:gap-1.5 active:scale-95 touch-manipulation min-h-[40px] md-lg:min-h-[42px]">
-                <span className="text-lg md-lg:text-xl">📊</span>
-                <span className="hidden md:inline">{t('analyticsTitle') || 'Analytics'}</span>
-              </button>
-            )}
             <button
               onClick={logout}
               className="px-2 sm-lg:px-4 md:px-3 md-lg:px-4 lg:px-5 py-2 md-lg:py-2.5 bg-white text-emerald-700 font-semibold rounded-lg hover:bg-emerald-50 hover:shadow-lg transition-all shadow-md text-xs sm-lg:text-sm md:text-sm md-lg:text-sm lg:text-base active:scale-95 touch-manipulation min-h-[40px] md-lg:min-h-[42px]"

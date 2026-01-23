@@ -161,15 +161,15 @@ function CropDetails() {
     <div className="min-h-screen bg-gray-50 w-full max-w-[100vw] overflow-x-hidden">
       {/* Header */}
       <header className="bg-white shadow w-full max-w-[100vw]">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+        <div className="w-full max-w-7xl mx-auto px-2 xs:px-3 sm:px-4 md:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 md:py-4">
           <button
             onClick={() => navigate('/dashboard')}
-            className="text-primary hover:underline mb-2 flex items-center gap-1 text-xs sm:text-sm"
+            className="text-primary hover:underline mb-1.5 xs:mb-2 flex items-center gap-1 text-[10px] xs:text-xs sm:text-sm touch-manipulation"
           >
             ← {t('backToDashboard')}
           </button>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <h1 className="text-base sm:text-xl lg:text-2xl font-bold text-gray-900">{cropLabel} - {t('cropInfo')}</h1>
+          <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2 xs:gap-3">
+            <h1 className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-900 leading-tight">{cropLabel} - {t('cropInfo')}</h1>
             <LanguageSwitcher />
           </div>
         </div>
@@ -237,45 +237,45 @@ function CropDetails() {
               </div>
             </div>
 
-            {/* Action Buttons - Responsive Grid with Flexbox */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
+            {/* Action Buttons - Fully Responsive: 2 cols mobile, 1 col stacked desktop */}
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 xs:gap-2.5 sm:gap-3 lg:gap-3 w-full">
               {crop.status === 'चालू' && (
                 <>
                   <button
                     onClick={() => navigate(`/crop/${id}/add-material`)}
-                    className="flex items-center justify-center gap-2 w-full py-3 sm:py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-bold text-base sm:text-lg hover:shadow-xl transition-all active:scale-95 min-h-[48px] touch-manipulation"
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 xs:gap-1.5 sm:gap-2 lg:gap-2.5 w-full py-2.5 xs:py-3 sm:py-3.5 lg:py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-md xs:rounded-lg font-bold text-[10px] xs:text-xs sm:text-sm lg:text-base hover:shadow-xl transition-all active:scale-95 min-h-[44px] xs:min-h-[48px] lg:min-h-[52px] touch-manipulation"
                   >
-                    <span className="text-xl">+</span>
-                    {t('addExpense')}
+                    <span className="text-base xs:text-lg sm:text-xl lg:text-2xl">+</span>
+                    <span className="text-center leading-tight">{t('addExpense')}</span>
                   </button>
                   <button
                     onClick={() => setShowCompleteModal(true)}
-                    className="flex items-center justify-center gap-2 w-full py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg font-bold text-base sm:text-lg hover:shadow-xl transition-all active:scale-95 min-h-[48px] touch-manipulation"
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 xs:gap-1.5 sm:gap-2 lg:gap-2.5 w-full py-2.5 xs:py-3 sm:py-3.5 lg:py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-md xs:rounded-lg font-bold text-[10px] xs:text-xs sm:text-sm lg:text-base hover:shadow-xl transition-all active:scale-95 min-h-[44px] xs:min-h-[48px] lg:min-h-[52px] touch-manipulation"
                   >
-                    <span className="text-xl">✓</span>
-                    {t('completeCrop')}
+                    <span className="text-base xs:text-lg sm:text-xl lg:text-2xl">✓</span>
+                    <span className="text-center leading-tight">{t('completeCrop')}</span>
                   </button>
                 </>
               )}
               <button
                 onClick={handleGeneratePDF}
                 disabled={crop.status !== 'पूर्ण'}
-                className={`flex items-center justify-center gap-2 w-full py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg transition-all min-h-[48px] touch-manipulation ${
+                className={`flex flex-col sm:flex-row items-center justify-center gap-1 xs:gap-1.5 sm:gap-2 lg:gap-2.5 w-full py-2.5 xs:py-3 sm:py-3.5 lg:py-4 rounded-md xs:rounded-lg font-bold text-[10px] xs:text-xs sm:text-sm lg:text-base transition-all min-h-[44px] xs:min-h-[48px] lg:min-h-[52px] touch-manipulation ${
                   crop.status === 'पूर्ण'
                     ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:shadow-xl active:scale-95'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
                 title={crop.status === 'पूर्ण' ? '' : t('pdfRequiresCompletion')}
               >
-                <span className="text-xl">📄</span>
-                {t('generatePDF')}
+                <span className="text-base xs:text-lg sm:text-xl lg:text-2xl">📄</span>
+                <span className="text-center leading-tight">{t('generatePDF')}</span>
               </button>
               <button
                 onClick={handleDeleteCrop}
-                className="flex items-center justify-center gap-2 w-full py-3 sm:py-4 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-lg font-bold text-base sm:text-lg hover:shadow-xl transition-all active:scale-95 min-h-[48px] touch-manipulation"
+                className="flex flex-col sm:flex-row items-center justify-center gap-1 xs:gap-1.5 sm:gap-2 lg:gap-2.5 w-full py-2.5 xs:py-3 sm:py-3.5 lg:py-4 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-md xs:rounded-lg font-bold text-[10px] xs:text-xs sm:text-sm lg:text-base hover:shadow-xl transition-all active:scale-95 min-h-[44px] xs:min-h-[48px] lg:min-h-[52px] touch-manipulation"
               >
-                <span className="text-xl">🗑️</span>
-                {t('deleteCrop')}
+                <span className="text-base xs:text-lg sm:text-xl lg:text-2xl">🗑️</span>
+                <span className="text-center leading-tight">{t('deleteCrop')}</span>
               </button>
             </div>
             {crop.status !== 'पूर्ण' && (
