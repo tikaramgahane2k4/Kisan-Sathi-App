@@ -1,16 +1,11 @@
 {
   "version": 2,
+  "buildCommand": "npm run vercel-build",
+  "outputDirectory": "client/build",
   "builds": [
     {
       "src": "server/server.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "client/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
     }
   ],
   "routes": [
@@ -23,11 +18,15 @@
       "dest": "server/server.js"
     },
     {
-      "src": "/(.*)",
+      "src": "/static/(.*)",
+      "dest": "client/build/static/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg))",
       "dest": "client/build/$1"
     },
     {
-      "src": "/(?!api|uploads)(.*)",
+      "src": "/(.*)",
       "dest": "client/build/index.html"
     }
   ],
