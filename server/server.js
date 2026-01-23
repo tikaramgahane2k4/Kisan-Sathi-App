@@ -8,8 +8,8 @@ const compression = require('compression');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
-// Load environment variables
-dotenv.config();
+// Load environment variables (prefer server/.env if present)
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 
@@ -30,8 +30,8 @@ const apiLimiter = rateLimit({
 });
 app.use('/api', apiLimiter);
 
-// Static folder for uploads
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Static folder for uploads (within server/uploads)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/kisan-profit-mitra')
