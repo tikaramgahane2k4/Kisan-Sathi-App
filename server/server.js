@@ -64,8 +64,13 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Kisan Profit Mitra API is running' });
 });
 
-const PORT = process.env.PORT || 5000;
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+// Export for Vercel serverless
+module.exports = app;
