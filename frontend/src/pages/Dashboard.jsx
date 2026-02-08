@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { cropAPI } from '../services/api';
 import { useTranslation } from '../i18n.jsx';
 
@@ -12,6 +12,7 @@ export const CropStatus = {
 
 const Dashboard = ({ user }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [crops, setCrops] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -190,7 +191,19 @@ const Dashboard = ({ user }) => {
           </div>
         ) : (
           crops.map(crop => (
-            <div key={crop._id || crop.id} className="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-50/50 transition-all overflow-hidden flex flex-col">
+            <div
+              key={crop._id || crop.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate(`/crop/${crop._id || crop.id}`)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate(`/crop/${crop._id || crop.id}`);
+                }
+              }}
+              className="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-50/50 transition-all overflow-hidden flex flex-col cursor-pointer"
+            >
               <div className={`h-2 ${crop.status === CropStatus.ACTIVE ? 'bg-emerald-500' : 'bg-slate-400'}`}></div>
               <div className="p-6 flex-grow">
                 <div className="flex justify-between items-start mb-4">
@@ -236,14 +249,14 @@ const Dashboard = ({ user }) => {
                 <div className="flex items-center space-x-2">
                   <button
                     type="button"
-                    onClick={() => handleEditCrop(crop)}
+                    onClick={(e) => { e.stopPropagation(); handleEditCrop(crop); }}
                     className="text-xs font-bold text-emerald-600 hover:text-emerald-700"
                   >
                     {t('edit')}
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDeleteCrop(crop._id || crop.id)}
+                    onClick={(e) => { e.stopPropagation(); handleDeleteCrop(crop._id || crop.id); }}
                     className="text-xs font-bold text-red-600 hover:text-red-700"
                   >
                     {t('delete')}
