@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { useTranslation } from '../i18n.jsx';
@@ -11,6 +11,65 @@ const Login = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const googleInitialized = useRef(false);
+
+  useEffect(() => {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      return;
+    }
+
+    const tryInitGoogle = () => {
+      if (googleInitialized.current) {
+        return true;
+      }
+      if (window.google?.accounts?.id) {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: async (response) => {
+            try {
+              setLoading(true);
+              setError('');
+              const result = await authAPI.googleLogin({ credential: response.credential });
+              if (result.success) {
+                onLogin(result.data, result.data.token);
+                navigate('/');
+              } else {
+                setError(result.message || 'Google login failed');
+              }
+            } catch (err) {
+              setError(err.response?.data?.message || 'Google login failed');
+            } finally {
+              setLoading(false);
+            }
+          }
+        });
+
+        const buttonEl = document.getElementById('googleSignInBtn');
+        if (buttonEl) {
+          window.google.accounts.id.renderButton(buttonEl, {
+            theme: 'outline',
+            size: 'large',
+            text: 'continue_with',
+            width: 320
+          });
+        }
+
+        googleInitialized.current = true;
+        return true;
+      }
+      return false;
+    };
+
+    if (!tryInitGoogle()) {
+      const interval = setInterval(() => {
+        if (tryInitGoogle()) {
+          clearInterval(interval);
+        }
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [navigate, onLogin]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -124,6 +183,16 @@ const Login = ({ onLogin }) => {
               )}
             </button>
           </form>
+
+          <div className="flex items-center gap-4 my-6">
+            <div className="flex-1 h-px bg-slate-200"></div>
+            <span className="text-xs text-slate-400 font-semibold">OR</span>
+            <div className="flex-1 h-px bg-slate-200"></div>
+          </div>
+
+          <div className="flex justify-center">
+            <div id="googleSignInBtn"></div>
+          </div>
           
           <div className="mt-8 text-center">
             <p className="text-slate-500">{t('dontHaveAccount')} <Link to="/register" className="text-emerald-600 font-bold hover:underline">{t('registerNow')}</Link></p>

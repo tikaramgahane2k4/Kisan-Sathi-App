@@ -52,8 +52,18 @@ export const authAPI = {
     return response.data;
   },
 
+  googleLogin: async (payload) => {
+    const response = await api.post('/auth/google', payload);
+    return response.data;
+  },
+
   getMe: async () => {
     const response = await api.get('/auth/me');
+    return response.data;
+  },
+
+  updateProfile: async (profileData) => {
+    const response = await api.put('/auth/profile', profileData);
     return response.data;
   },
 };

@@ -10,7 +10,26 @@ export const CropStatus = {
   COMPLETED: 'Completed'
 };
 
-const Dashboard = ({ user }) => {
+// Common crop names
+const CROP_OPTIONS = [
+  'Wheat (गेहूं / गहू)',
+  'Rice (धान / तांदूळ)',
+  'Cotton (कपास / कापूस)',
+  'Sugarcane (गन्ना / ऊस)',
+  'Maize (मक्का / मका)',
+  'Bajra (बाजरा / बाजरी)',
+  'Jowar (ज्वार / ज्वारी)',
+  'Pulses (दालें / डाळी)',
+  'Groundnut (मूंगफली / भुईमूग)',
+  'Soybean (सोयाबीन / सोयाबीन)',
+  'Mustard (सरसों / मोहरी)',
+  'Potato (आलू / बटाटा)',
+  'Onion (प्याज / कांदा)',
+  'Tomato (टमाटर / टोमॅटो)',
+  'Other (अन्य / इतर)'
+];
+
+const Dashboard = ({ user, showAddCropModal, setShowAddCropModal }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [crops, setCrops] = useState([]);
@@ -27,6 +46,33 @@ const Dashboard = ({ user }) => {
     location: '',
     notes: ''
   });
+  const [customCropName, setCustomCropName] = useState('');
+
+  useEffect(() => {
+    if (showAddCropModal) {
+      handleOpenAddModal();
+      setShowAddCropModal(false);
+    }
+  }, [showAddCropModal, setShowAddCropModal]);
+
+  const handleOpenAddModal = () => {
+    const defaultLocation = user?.city && user?.state 
+      ? `${user.city}, ${user.state}` 
+      : user?.city || user?.state || '';
+    
+    setFormData({
+      name: '',
+      startDate: new Date().toISOString().split('T')[0],
+      landArea: '',
+      unit: 'Acre',
+      location: defaultLocation,
+      notes: ''
+    });
+    setCustomCropName('');
+    setIsEditing(false);
+    setEditingCropId(null);
+    setShowModal(true);
+  };
 
   useEffect(() => {
     const fetchCrops = async () => {
@@ -51,10 +97,12 @@ const Dashboard = ({ user }) => {
     e.preventDefault();
     if (!user) return;
 
+    const cropName = formData.name === 'Other (अन्य / इतर)' ? customCropName : formData.name.split(' (')[0];
+
     try {
       setLoading(true);
       const cropData = {
-        name: formData.name,
+        name: cropName,
         startDate: formData.startDate,
         landArea: parseFloat(formData.landArea),
         unit: formData.unit,
@@ -75,6 +123,7 @@ const Dashboard = ({ user }) => {
           location: '',
           notes: ''
         });
+        setCustomCropName('');
       }
     } catch (err) {
       setError('Failed to create crop');
@@ -85,26 +134,28 @@ const Dashboard = ({ user }) => {
 
   const handleEditCrop = (crop) => {
     setIsEditing(true);
-    setEditingCropId(crop._id || crop.id);
+    const cropName = crop.name || '';
+    const isInList = CROP_OPTIONS.some(option => option.startsWith(cropName.split(' (')[0]));
+    
     setFormData({
-      name: crop.name || '',
+      name: isInList ? cropName : 'Other (अन्य / इतर)',
       startDate: crop.startDate ? new Date(crop.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       landArea: crop.landArea || '',
       unit: crop.unit || 'Acre',
       location: crop.location || '',
       notes: crop.notes || ''
     });
+    setCustomCropName(isInList ? '' : cropName);
     setShowModal(true);
   };
 
   const handleUpdateCrop = async (e) => {
-    e.preventDefault();
-    if (!user || !editingCropId) return;
+    const cropName = formData.name === 'Other (अन्य / इतर)' ? customCropName : formData.name.split(' (')[0];
 
     try {
       setLoading(true);
       const cropData = {
-        name: formData.name,
+        name: cropName,
         startDate: formData.startDate,
         landArea: parseFloat(formData.landArea),
         unit: formData.unit,
@@ -126,6 +177,7 @@ const Dashboard = ({ user }) => {
           location: '',
           notes: ''
         });
+        setCustomCropName('');
       }
     } catch (err) {
       setError('Failed to update crop');
@@ -162,7 +214,7 @@ const Dashboard = ({ user }) => {
           <p className="text-slate-500">{t('manageCrops')}</p>
         </div>
         <button 
-          onClick={() => setShowModal(true)}
+          onClick={handleOpenAddModal}
           className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-emerald-200 transition-all flex items-center space-x-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,7 +235,7 @@ const Dashboard = ({ user }) => {
             <h3 className="text-lg font-bold text-slate-800">{t('noCrops')}</h3>
             <p className="text-slate-500 mb-6">{t('startTracking')}</p>
             <button 
-              onClick={() => setShowModal(true)}
+              onClick={handleOpenAddModal}
               className="text-emerald-600 font-bold hover:underline"
             >
               {t('clickAddCrop')}
@@ -284,17 +336,30 @@ const Dashboard = ({ user }) => {
                     </svg>
                   </button>
                 </div>
-                <div className="px-6 py-6 space-y-4">
+                <div className="p-6 space-y-4">
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-1">{t('cropName')}</label>
-                    <input 
-                      type="text" 
+                    <select
                       required 
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
-                      placeholder={t('cropName')}
                       value={formData.name}
                       onChange={e => setFormData({...formData, name: e.target.value})}
-                    />
+                    >
+                      <option value="">{t('selectCrop')}</option>
+                      {CROP_OPTIONS.map(crop => (
+                        <option key={crop} value={crop}>{crop}</option>
+                      ))}
+                    </select>
+                    {formData.name === 'Other (अन्य / इतर)' && (
+                      <input 
+                        type="text" 
+                        required 
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all mt-2"
+                        placeholder={t('enterCropName')}
+                        value={customCropName}
+                        onChange={e => setCustomCropName(e.target.value)}
+                      />
+                    )}
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>

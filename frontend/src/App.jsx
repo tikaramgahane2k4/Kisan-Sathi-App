@@ -5,7 +5,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CropDetails from './pages/CropDetails';
+import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
+import MobileNav from './components/MobileNav';
 import ProtectedRoute from './components/ProtectedRoute';
 import { LanguageProvider } from './i18n.jsx';
 
@@ -14,6 +16,7 @@ const App = () => {
     const saved = localStorage.getItem('agri_auth');
     return saved ? JSON.parse(saved) : { user: null, token: null, isAuthenticated: false };
   });
+  const [showAddCropModal, setShowAddCropModal] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('agri_auth', JSON.stringify(auth));
@@ -28,12 +31,19 @@ const App = () => {
     localStorage.removeItem('agri_auth');
   };
 
+  const updateUser = (updatedUser) => {
+    setAuth(prev => ({
+      ...prev,
+      user: { ...prev.user, ...updatedUser }
+    }));
+  };
+
   return (
     <LanguageProvider>
       <HashRouter>
         <div className="min-h-screen flex flex-col">
           {auth.isAuthenticated && <Navbar user={auth.user} onLogout={logout} />}
-          <main className="flex-grow">
+          <main className="flex-grow pb-20 md:pb-0">
             <Routes>
               <Route 
                 path="/login" 
@@ -47,7 +57,7 @@ const App = () => {
                 path="/" 
                 element={
                   <ProtectedRoute isAuthenticated={auth.isAuthenticated}>
-                    <Dashboard user={auth.user} />
+                    <Dashboard user={auth.user} showAddCropModal={showAddCropModal} setShowAddCropModal={setShowAddCropModal} />
                   </ProtectedRoute>
                 } 
               />
@@ -59,9 +69,18 @@ const App = () => {
                   </ProtectedRoute>
                 } 
               />
+              <Route 
+                path="/profile" 
+                element={
+                  <ProtectedRoute isAuthenticated={auth.isAuthenticated}>
+                    <Profile user={auth.user} onUpdateUser={updateUser} />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
+          {auth.isAuthenticated && <MobileNav onAddCrop={() => setShowAddCropModal(true)} />}
         </div>
       </HashRouter>
     </LanguageProvider>

@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User.model.js';
 
 // Generate JWT Token
@@ -7,6 +8,8 @@ const generateToken = (id) => {
     expiresIn: '30d'
   });
 };
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // @desc    Register new user
 // @route   POST /api/auth/register
@@ -78,6 +81,69 @@ export const login = async (req, res) => {
   }
 };
 
+// @desc    Google login
+// @route   POST /api/auth/google
+// @access  Public
+export const googleLogin = async (req, res) => {
+  try {
+    const { credential } = req.body;
+
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      return res.status(500).json({
+        success: false,
+        message: 'Google client ID not configured'
+      });
+    }
+
+    if (!credential) {
+      return res.status(400).json({ success: false, message: 'Missing Google credential' });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+    const googleId = payload?.sub;
+    const email = payload?.email;
+    const name = payload?.name || 'Google User';
+
+    if (!email || !googleId) {
+      return res.status(400).json({ success: false, message: 'Invalid Google token' });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        authProvider: 'google',
+        googleId
+      });
+    } else if (!user.googleId) {
+      user.googleId = googleId;
+      if (!user.authProvider) {
+        user.authProvider = 'google';
+      }
+      await user.save();
+    }
+
+    res.json({
+      success: true,
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user._id)
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // @desc    Get current user
 // @route   GET /api/auth/me
 // @access  Private
@@ -87,6 +153,42 @@ export const getMe = async (req, res) => {
     res.json({
       success: true,
       data: user
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, mobile, city, state } = req.body;
+    
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (name) user.name = name;
+    if (mobile !== undefined) user.mobile = mobile;
+    if (city !== undefined) user.city = city;
+    if (state !== undefined) user.state = state;
+
+    await user.save();
+
+    res.json({
+      success: true,
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        city: user.city,
+        state: user.state
+      }
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

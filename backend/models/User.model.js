@@ -16,8 +16,31 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
-    minlength: 6
+    minlength: 6,
+    required: function() {
+      return this.authProvider === 'local';
+    }
+  },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local'
+  },
+  googleId: {
+    type: String,
+    default: null
+  },
+  mobile: {
+    type: String,
+    default: ''
+  },
+  city: {
+    type: String,
+    default: ''
+  },
+  state: {
+    type: String,
+    default: ''
   }
 }, {
   timestamps: true
@@ -28,6 +51,9 @@ userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
     return next();
   }
+  if (!this.password) {
+    return next();
+  }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
   next();
@@ -35,6 +61,9 @@ userSchema.pre('save', async function(next) {
 
 // Method to compare passwords
 userSchema.methods.comparePassword = async function(candidatePassword) {
+  if (!this.password) {
+    return false;
+  }
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
