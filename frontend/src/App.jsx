@@ -5,7 +5,11 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CropDetails from './pages/CropDetails';
+import Account from './pages/Account';
 import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import Help from './pages/Help';
+import History from './pages/History';
 import Navbar from './components/Navbar';
 import MobileNav from './components/MobileNav';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -70,10 +74,42 @@ const App = () => {
                 } 
               />
               <Route 
+                path="/account" 
+                element={
+                  <ProtectedRoute isAuthenticated={auth.isAuthenticated}>
+                    <Account user={auth.user} onLogout={logout} onUpdateUser={updateUser} />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
                 path="/profile" 
                 element={
                   <ProtectedRoute isAuthenticated={auth.isAuthenticated}>
                     <Profile user={auth.user} onUpdateUser={updateUser} />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/settings" 
+                element={
+                  <ProtectedRoute isAuthenticated={auth.isAuthenticated}>
+                    <Settings />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/help" 
+                element={
+                  <ProtectedRoute isAuthenticated={auth.isAuthenticated}>
+                    <Help />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/history" 
+                element={
+                  <ProtectedRoute isAuthenticated={auth.isAuthenticated}>
+                    <History />
                   </ProtectedRoute>
                 } 
               />

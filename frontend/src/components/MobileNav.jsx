@@ -43,9 +43,9 @@ const MobileNav = ({ onAddCrop }) => {
 
         {/* Profile/Account */}
         <Link
-          to="/profile"
+          to="/account"
           className={`flex flex-col items-center justify-center space-y-1 transition-colors ${
-            isActive('/profile')
+            isActive('/account') || isActive('/profile') || isActive('/settings') || isActive('/help') || isActive('/history')
               ? 'text-emerald-600 bg-emerald-50'
               : 'text-slate-500 hover:text-emerald-600 hover:bg-emerald-50/50'
           }`}
