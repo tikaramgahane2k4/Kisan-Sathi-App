@@ -9,8 +9,6 @@ const generateToken = (id) => {
   });
 };
 
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
 // @desc    Register new user
 // @route   POST /api/auth/register
 // @access  Public
@@ -98,6 +96,8 @@ export const googleLogin = async (req, res) => {
     if (!credential) {
       return res.status(400).json({ success: false, message: 'Missing Google credential' });
     }
+
+    const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
