@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://khetbookapp.vercel.app/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://kisan-sathi-app.vercel.app/api';
 
 // Create axios instance
 const api = axios.create({
