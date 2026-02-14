@@ -18,7 +18,7 @@ const Register = ({ onLogin }) => {
   const googleInitialized = useRef(false);
 
   useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '605869796970-pdh168d21jva33qdcsbsnvqjq76380p5.apps.googleusercontent.com';
     if (!clientId) {
       return;
     }
