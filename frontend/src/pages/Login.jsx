@@ -90,7 +90,7 @@ const Login = ({ onLogin }) => {
         }
       }
     } catch (err) {
-      const msg = err.response?.data?.message || 'Login failed';
+      const msg = err.response?.data?.message || err.message || 'Login failed. Please check your connection.';
       setError(msg);
       if (msg.toLowerCase().includes('invalid')) {
         setTimeout(() => {
