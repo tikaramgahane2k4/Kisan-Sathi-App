@@ -31,6 +31,11 @@ const App = () => {
   };
 
   const logout = () => {
+    // Revoke Google Sign-In so it doesn't auto-show account on login page
+    if (window.google?.accounts?.id) {
+      window.google.accounts.id.disableAutoSelect();
+      window.google.accounts.id.cancel();
+    }
     setAuth({ user: null, token: null, isAuthenticated: false });
     localStorage.removeItem('agri_auth');
   };

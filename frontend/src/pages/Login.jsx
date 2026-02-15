@@ -24,8 +24,12 @@ const Login = ({ onLogin }) => {
         return true;
       }
       if (window.google?.accounts?.id) {
+        // Cancel any existing One Tap prompt first
+        window.google.accounts.id.cancel();
         window.google.accounts.id.initialize({
           client_id: clientId,
+          auto_select: false,
+          cancel_on_tap_outside: true,
           callback: async (response) => {
             try {
               setLoading(true);
@@ -67,8 +71,22 @@ const Login = ({ onLogin }) => {
           clearInterval(interval);
         }
       }, 500);
-      return () => clearInterval(interval);
+      return () => {
+        clearInterval(interval);
+        // Cancel One Tap prompt on unmount
+        if (window.google?.accounts?.id) {
+          window.google.accounts.id.cancel();
+        }
+        googleInitialized.current = false;
+      };
     }
+
+    return () => {
+      if (window.google?.accounts?.id) {
+        window.google.accounts.id.cancel();
+      }
+      googleInitialized.current = false;
+    };
   }, [navigate, onLogin]);
 
   const handleSubmit = async (e) => {
