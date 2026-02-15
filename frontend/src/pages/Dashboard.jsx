@@ -225,7 +225,7 @@ const Dashboard = ({ user, showAddCropModal, setShowAddCropModal }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {crops.length === 0 ? (
+        {crops.filter(crop => crop.status === CropStatus.ACTIVE).length === 0 ? (
           <div className="col-span-full bg-white border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center">
             <div className="bg-emerald-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -242,7 +242,7 @@ const Dashboard = ({ user, showAddCropModal, setShowAddCropModal }) => {
             </button>
           </div>
         ) : (
-          crops.map(crop => (
+          crops.filter(crop => crop.status === CropStatus.ACTIVE).map(crop => (
             <div
               key={crop._id || crop.id}
               role="button"
