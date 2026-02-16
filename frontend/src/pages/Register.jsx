@@ -256,7 +256,15 @@ const Register = ({ onLogin }) => {
           </div>
           
           <div className="mt-8 text-center">
-            <p className="text-slate-500 text-sm">{t('alreadyMember')} <Link to="/login" className="text-emerald-600 font-bold hover:underline cursor-pointer">{t('logIn')}</Link></p>
+            <p className="text-slate-500 text-sm">
+              {t('alreadyMember')} 
+              <span
+                className="text-emerald-600 font-bold hover:underline cursor-pointer"
+                onClick={() => navigate('/login')}
+              >
+                {t('logIn')}
+              </span>
+            </p>
           </div>
         </div>
       </div>

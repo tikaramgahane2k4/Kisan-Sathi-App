@@ -223,7 +223,13 @@ const Login = ({ onLogin }) => {
 
           <div className="mt-8 text-center">
             <span className="text-slate-500">{t('dontHaveAccount')} </span>
-            <Link to="/register" className="text-emerald-600 font-bold hover:underline inline-block align-baseline cursor-pointer">{t('registerNow')}</Link>
+            <span
+              className="text-emerald-600 font-bold hover:underline align-baseline cursor-pointer"
+              style={{display: 'inline'}}
+              onClick={() => navigate('/register')}
+            >
+              {t('registerNow')}
+            </span>
           </div>
         </div>
       </div>

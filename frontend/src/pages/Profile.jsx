@@ -11,16 +11,21 @@ const Profile = ({ user, onUpdateUser, isOpen, onClose }) => {
     name: '',
     email: '',
     mobile: '',
+    pincode: '',
     city: '',
+    district: '',
     state: ''
   });
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     mobile: '',
+    pincode: '',
     city: '',
+    district: '',
     state: ''
   });
+  const [pinLoading, setPinLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
@@ -42,7 +47,9 @@ const Profile = ({ user, onUpdateUser, isOpen, onClose }) => {
             name: response.data.name || '',
             email: response.data.email || '',
             mobile: response.data.mobile || '',
+            pincode: response.data.pincode || '',
             city: response.data.city || '',
+            district: response.data.district || '',
             state: response.data.state || ''
           };
           setProfileData(data);
@@ -74,16 +81,19 @@ const Profile = ({ user, onUpdateUser, isOpen, onClose }) => {
       const response = await authAPI.updateProfile({
         name: formData.name,
         mobile: formData.mobile,
+        pincode: formData.pincode,
         city: formData.city,
+        district: formData.district,
         state: formData.state
       });
-      
       if (response.success) {
         const updatedData = {
           name: response.data.name || formData.name,
           email: response.data.email || profileData.email,
           mobile: response.data.mobile || formData.mobile,
+          pincode: response.data.pincode || formData.pincode,
           city: response.data.city || formData.city,
+          district: response.data.district || formData.district,
           state: response.data.state || formData.state
         };
         setProfileData(updatedData);
@@ -103,6 +113,48 @@ const Profile = ({ user, onUpdateUser, isOpen, onClose }) => {
       setLoading(false);
     }
   };
+
+  // Auto-fill address fields from pin code
+  useEffect(() => {
+    const fetchPinDetails = async () => {
+      if (formData.pincode && formData.pincode.length === 6) {
+        setPinLoading(true);
+        try {
+          const res = await fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`);
+          const data = await res.json();
+          if (data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
+            const po = data[0].PostOffice[0];
+            setFormData(f => ({
+              ...f,
+              city: po.Block || po.Taluk || po.Name || '',
+              district: po.District || '',
+              state: po.State || ''
+            }));
+          }
+        } catch (e) {
+          // ignore
+        } finally {
+          setPinLoading(false);
+        }
+      }
+    };
+    fetchPinDetails();
+    // eslint-disable-next-line
+  }, [formData.pincode]);
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Pin Code</label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                      placeholder="Enter 6-digit PIN code"
+                      value={formData.pincode}
+                      maxLength={6}
+                      onChange={e => setFormData({ ...formData, pincode: e.target.value.replace(/[^0-9]/g, '') })}
+                    />
+                    {pinLoading && (
+                      <span className="text-xs text-emerald-600">Fetching address...</span>
+                    )}
+                  </div>
 
   const handleCancel = () => {
     setFormData({ ...profileData });
@@ -187,6 +239,18 @@ const Profile = ({ user, onUpdateUser, isOpen, onClose }) => {
               placeholder={t('notAdded')}
             />
             <ProfileField
+              icon={<svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-14c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>}
+              label="District"
+              value={profileData.district}
+              placeholder={t('notAdded')}
+            />
+            <ProfileField
+              icon={<svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-14c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>}
+              label="Pin Code"
+              value={profileData.pincode}
+              placeholder={t('notAdded')}
+            />
+            <ProfileField
               icon={<svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>}
               label={t('cityLabel')}
               value={profileData.city}
@@ -236,34 +300,66 @@ const Profile = ({ user, onUpdateUser, isOpen, onClose }) => {
 
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('mobileNumber')}</label>
-              <input 
-                type="tel" 
+              <input
+                type="tel"
                 className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
                 placeholder="9876543210"
                 value={formData.mobile}
-                onChange={e => setFormData({...formData, mobile: e.target.value})}
+                maxLength={10}
+                pattern="[0-9]{10}"
+                onChange={e => setFormData({
+                  ...formData,
+                  mobile: e.target.value.replace(/[^0-9]/g, '').slice(0, 10)
+                })}
+                required
               />
+              {formData.mobile && formData.mobile.length !== 10 && (
+                <span className="text-xs text-red-500">Mobile number must be 10 digits</span>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('cityLabel')}</label>
-              <input 
-                type="text" 
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">Pin Code</label>
+              <input
+                type="text"
                 className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
-                placeholder={t('enterCity')}
+                placeholder="Enter 6-digit PIN code"
+                value={formData.pincode}
+                maxLength={6}
+                onChange={e => setFormData({ ...formData, pincode: e.target.value.replace(/[^0-9]/g, '') })}
+              />
+              {pinLoading && (
+                <span className="text-xs text-emerald-600">Fetching address...</span>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">City / Village</label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                placeholder="City or Village"
                 value={formData.city}
-                onChange={e => setFormData({...formData, city: e.target.value})}
+                onChange={e => setFormData({ ...formData, city: e.target.value })}
               />
             </div>
-
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('stateLabel')}</label>
-              <input 
-                type="text" 
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">District</label>
+              <input
+                type="text"
                 className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
-                placeholder={t('enterState')}
+                placeholder="District"
+                value={formData.district}
+                onChange={e => setFormData({ ...formData, district: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">State</label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                placeholder="State"
                 value={formData.state}
-                onChange={e => setFormData({...formData, state: e.target.value})}
+                onChange={e => setFormData({ ...formData, state: e.target.value })}
               />
             </div>
           </div>

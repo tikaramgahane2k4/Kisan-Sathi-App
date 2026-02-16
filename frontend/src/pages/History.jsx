@@ -7,29 +7,53 @@ const History = () => {
   const { t } = useTranslation();
   const [crops, setCrops] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // all, active, completed
+  // Only show completed crops in history
+  const [filter, setFilter] = useState('completed'); // completed only
+
+
+  const fetchCrops = async () => {
+    try {
+      setLoading(true);
+      const response = await cropAPI.getCrops();
+      if (response.success) {
+        setCrops(response.data || []);
+      }
+    } catch (err) {
+      console.error('Failed to load crops');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchCrops = async () => {
-      try {
-        const response = await cropAPI.getCrops();
-        if (response.success) {
-          setCrops(response.data || []);
-        }
-      } catch (err) {
-        console.error('Failed to load crops');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchCrops();
   }, []);
 
-  const filteredCrops = crops.filter(crop => {
-    if (filter === 'active') return crop.status === 'Active';
-    if (filter === 'completed') return crop.status === 'Completed';
-    return true;
-  });
+  // Delete a single crop
+  const handleDeleteCrop = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this crop?')) return;
+    try {
+      await cropAPI.deleteCrop(id);
+      setCrops(crops => crops.filter(c => c._id !== id));
+    } catch (err) {
+      alert('Failed to delete crop');
+    }
+  };
+
+  // Delete all completed crops
+  const handleDeleteAll = async () => {
+    if (!window.confirm('Are you sure you want to delete all completed crops?')) return;
+    try {
+      await cropAPI.deleteAllCrops();
+      setCrops([]);
+    } catch (err) {
+      alert('Failed to delete all history');
+    }
+  };
+
+
+  // Only completed crops
+  const filteredCrops = crops.filter(crop => crop.status === 'Completed');
 
   // Sort by date (newest first)
   const sortedCrops = [...filteredCrops].sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
@@ -77,40 +101,37 @@ const History = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-3 gap-3 mb-5">
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-3 text-center">
-          <p className="text-2xl font-bold text-slate-800">{totalStats.totalCrops}</p>
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-3 text-center flex flex-col items-center justify-center min-h-[70px]">
+          <p className="text-xl md:text-2xl font-bold text-slate-800 break-words max-w-full">{totalStats.totalCrops}</p>
           <p className="text-xs text-slate-500 mt-0.5">{t('totalCrops')}</p>
         </div>
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-3 text-center">
-          <p className="text-2xl font-bold text-emerald-600">₹{totalStats.totalSales.toLocaleString('en-IN')}</p>
-          <p className="text-xs text-slate-500 mt-0.5">{t('totalSalesLabel')}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-3 text-center">
-          <p className="text-2xl font-bold text-red-500">₹{totalStats.totalExpense.toLocaleString('en-IN')}</p>
+        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-3 text-center flex flex-col items-center justify-center min-h-[70px]">
+          <p className="text-xl md:text-2xl font-bold text-red-500 break-words max-w-full">₹{totalStats.totalExpense.toLocaleString('en-IN')}</p>
           <p className="text-xs text-slate-500 mt-0.5">{t('totalSpent')}</p>
         </div>
       </div>
+      <div className="mb-5">
+        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-3 text-center flex flex-col items-center justify-center min-h-[70px] min-w-0">
+          <p className="text-xl md:text-2xl font-bold text-emerald-600 break-words w-full">₹{totalStats.totalSales.toLocaleString('en-IN')}</p>
+          <p className="text-xs text-slate-500 mt-0.5">{t('totalSalesLabel')}</p>
+        </div>
+      </div>
 
-      {/* Filter Tabs */}
-      <div className="flex bg-slate-100 rounded-xl p-1 mb-5">
-        {[
-          { key: 'all', label: t('allCrops') },
-          { key: 'active', label: t('activeCrops') },
-          { key: 'completed', label: t('completedCrops') }
-        ].map(tab => (
+
+      {/* Delete All Button */}
+      <div className="flex justify-end mb-4">
+        {sortedCrops.length > 0 && (
           <button
-            key={tab.key}
-            onClick={() => setFilter(tab.key)}
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
-              filter === tab.key
-                ? 'bg-white text-emerald-700 shadow-sm'
-                : 'text-slate-500 hover:text-slate-700'
-            }`}
+            onClick={handleDeleteAll}
+            className="flex items-center gap-1 bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white font-semibold py-1 px-2 rounded-full shadow text-xs border border-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
           >
-            {tab.label}
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Delete All
           </button>
-        ))}
+        )}
       </div>
 
       {/* Loading */}
@@ -134,12 +155,11 @@ const History = () => {
             const profit = (crop.totalSales || 0) - (crop.totalExpense || 0);
             const isProfit = profit >= 0;
             return (
-              <Link
-                key={crop._id}
-                to={`/crop/${crop._id}`}
-                className="block bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all overflow-hidden"
-              >
-                <div className="p-4">
+              <div key={crop._id} className="relative group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all overflow-hidden">
+                <Link
+                  to={`/crop/${crop._id}`}
+                  className="block p-4"
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
@@ -191,8 +211,16 @@ const History = () => {
                       </p>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+                {/* Delete Button */}
+                <button
+                  onClick={() => handleDeleteCrop(crop._id)}
+                  className="absolute top-3 right-3 flex items-center justify-center bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white rounded-full px-2.5 py-1 shadow-lg border border-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 transition-all duration-150 z-10 text-xs font-semibold"
+                  title="Delete"
+                >
+                  Delete
+                </button>
+              </div>
             );
           })}
         </div>

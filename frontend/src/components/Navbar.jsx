@@ -75,7 +75,7 @@ const Navbar = ({ user, onLogout }) => {
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <Link to="/" className="flex items-center space-x-2.5">
+            <Link to="/" className="flex items-center space-x-1">
               <img src="/logo.png" alt="KhetBook" className="w-10 h-10 object-contain" />
               <span className="font-outfit text-xl font-bold tracking-tight">{t('appName')}</span>
             </Link>

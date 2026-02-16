@@ -13,7 +13,9 @@ import History from './pages/History';
 import Navbar from './components/Navbar';
 import MobileNav from './components/MobileNav';
 import ProtectedRoute from './components/ProtectedRoute';
+
 import { LanguageProvider } from './i18n.jsx';
+import { NotificationProvider } from './components/NotificationProvider.jsx';
 
 const App = () => {
   const [auth, setAuth] = useState(() => {
@@ -48,12 +50,13 @@ const App = () => {
   };
 
   return (
-    <LanguageProvider>
-      <HashRouter>
-        <div className="min-h-screen flex flex-col">
-          {auth.isAuthenticated && <Navbar user={auth.user} onLogout={logout} />}
-          <main className="flex-grow pb-20 md:pb-0">
-            <Routes>
+    <NotificationProvider>
+      <LanguageProvider>
+        <HashRouter>
+          <div className="min-h-screen flex flex-col">
+            {auth.isAuthenticated && <Navbar user={auth.user} onLogout={logout} />}
+            <main className="flex-grow pb-20 md:pb-0">
+              <Routes>
               <Route 
                 path="/login" 
                 element={!auth.isAuthenticated ? <Login onLogin={login} /> : <Navigate to="/" />} 
@@ -121,10 +124,11 @@ const App = () => {
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
-          {auth.isAuthenticated && <MobileNav onAddCrop={() => setShowAddCropModal(true)} />}
-        </div>
-      </HashRouter>
-    </LanguageProvider>
+            {auth.isAuthenticated && <MobileNav onAddCrop={() => setShowAddCropModal(true)} />}
+          </div>
+        </HashRouter>
+      </LanguageProvider>
+    </NotificationProvider>
   );
 };
 

@@ -1,5 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
+import { getWeatherByCity } from '../services/weatherAPI';
+import axios from 'axios';
+import { useNotification } from '../components/NotificationProvider.jsx';
 import { Link, useNavigate } from 'react-router-dom';
 import { cropAPI } from '../services/api';
 import { useTranslation } from '../i18n.jsx';
@@ -31,6 +34,7 @@ const CROP_OPTIONS = [
 
 const Dashboard = ({ user, showAddCropModal, setShowAddCropModal }) => {
   const { t } = useTranslation();
+  const { addNotification } = useNotification();
   const navigate = useNavigate();
   const [crops, setCrops] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -47,6 +51,47 @@ const Dashboard = ({ user, showAddCropModal, setShowAddCropModal }) => {
     notes: ''
   });
   const [customCropName, setCustomCropName] = useState('');
+  const [weather, setWeather] = useState(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [weatherCity, setWeatherCity] = useState('');
+  // Weather fetch using city or pincode
+  useEffect(() => {
+    const fetchWeather = async () => {
+      let city = null;
+      // Always use district from pincode for weather lookup
+      if (user?.pincode && user.pincode.length === 6) {
+        try {
+          const res = await axios.get(`https://api.postalpincode.in/pincode/${user.pincode}`);
+          const data = res.data;
+          if (data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
+            city = data[0].PostOffice[0].District;
+          }
+        } catch (e) {
+          city = null;
+        }
+      }
+      if (city) {
+        setWeatherCity(city);
+        setWeatherLoading(true);
+        getWeatherByCity(city)
+          .then(data => {
+            if (data) {
+              setWeather(data);
+            } else {
+              // Fallback: try removing diacritics and common spelling
+                  const fallbackCity = city.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+              getWeatherByCity(fallbackCity || 'Bhandara').then(fallbackData => {
+                setWeather(fallbackData);
+              });
+            }
+          })
+          .finally(() => setWeatherLoading(false));
+      } else {
+        setWeatherCity('');
+      }
+    };
+    fetchWeather();
+  }, [user?.pincode]);
 
   useEffect(() => {
     if (showAddCropModal) {
@@ -124,9 +169,11 @@ const Dashboard = ({ user, showAddCropModal, setShowAddCropModal }) => {
           notes: ''
         });
         setCustomCropName('');
+        addNotification('Crop added successfully!', 'success');
       }
     } catch (err) {
       setError('Failed to create crop');
+      addNotification('Failed to add crop', 'error');
     } finally {
       setLoading(false);
     }
@@ -178,9 +225,11 @@ const Dashboard = ({ user, showAddCropModal, setShowAddCropModal }) => {
           notes: ''
         });
         setCustomCropName('');
+        addNotification('Crop updated successfully!', 'success');
       }
     } catch (err) {
       setError('Failed to update crop');
+      addNotification('Failed to update crop', 'error');
     } finally {
       setLoading(false);
     }
@@ -194,9 +243,11 @@ const Dashboard = ({ user, showAddCropModal, setShowAddCropModal }) => {
       const response = await cropAPI.deleteCrop(cropId);
       if (response.success) {
         setCrops(crops.filter(c => (c._id || c.id) !== cropId));
+        addNotification('Crop deleted successfully!', 'success');
       }
     } catch (err) {
       setError('Failed to delete crop');
+      addNotification('Failed to delete crop', 'error');
     } finally {
       setLoading(false);
     }
@@ -208,6 +259,27 @@ const Dashboard = ({ user, showAddCropModal, setShowAddCropModal }) => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Weather Widget */}
+      <div className="mb-6">
+        {weatherLoading ? (
+          <div className="bg-blue-50 text-blue-700 px-4 py-3 rounded-xl inline-block">Loading weather...</div>
+        ) : weather ? (
+          <div className="bg-blue-50 px-4 py-3 rounded-xl flex items-center space-x-4 w-fit">
+            <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt="Weather" className="w-12 h-12" />
+            <div>
+              <div className="text-lg font-bold text-blue-700">{weatherCity || weather.name} Weather</div>
+              <div className="text-blue-700 text-sm">{weather.weather[0].description}</div>
+              <div className="text-blue-900 text-xl font-bold">{Math.round(weather.main.temp)}°C</div>
+              <div className="text-xs text-blue-700">Humidity: {weather.main.humidity}% | Wind: {weather.wind.speed} m/s</div>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-blue-50 text-blue-700 px-4 py-3 rounded-xl inline-block">Weather unavailable</div>
+        )}
+        {weatherCity && !weather && !weatherLoading && (
+          <div className="text-xs text-blue-700 mt-1">Weather lookup for: {weatherCity}</div>
+        )}
+      </div>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-800 font-outfit">{t('farmOverview')}</h1>
@@ -224,7 +296,7 @@ const Dashboard = ({ user, showAddCropModal, setShowAddCropModal }) => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {crops.filter(crop => crop.status === CropStatus.ACTIVE).length === 0 ? (
           <div className="col-span-full bg-white border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center">
             <div className="bg-emerald-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -254,7 +326,7 @@ const Dashboard = ({ user, showAddCropModal, setShowAddCropModal }) => {
                   navigate(`/crop/${crop._id || crop.id}`);
                 }
               }}
-              className="group bg-white rounded-2xl shadow-sm border border-slate-200 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-50/50 transition-all overflow-hidden flex flex-col cursor-pointer"
+              className="group bg-white rounded-3xl shadow-lg border border-slate-200 hover:border-emerald-300 hover:shadow-2xl hover:shadow-emerald-50/50 transition-all overflow-hidden flex flex-col cursor-pointer min-h-[260px] md:min-h-[280px] lg:min-h-[320px] w-full md:w-[420px] lg:w-[480px] mx-auto"
             >
               <div className={`h-2 ${crop.status === CropStatus.ACTIVE ? 'bg-emerald-500' : 'bg-slate-400'}`}></div>
               <div className="p-6 flex-grow">
@@ -302,14 +374,14 @@ const Dashboard = ({ user, showAddCropModal, setShowAddCropModal }) => {
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); handleEditCrop(crop); }}
-                    className="text-xs font-bold text-emerald-600 hover:text-emerald-700"
+                    className="text-base font-bold px-4 py-2 rounded-lg text-emerald-600 bg-emerald-50 hover:text-emerald-700 hover:bg-emerald-100 transition-all"
                   >
                     {t('edit')}
                   </button>
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); handleDeleteCrop(crop._id || crop.id); }}
-                    className="text-xs font-bold text-red-600 hover:text-red-700"
+                    className="text-base font-bold px-4 py-2 rounded-lg text-red-600 bg-red-50 hover:text-red-700 hover:bg-red-100 transition-all"
                   >
                     {t('delete')}
                   </button>
